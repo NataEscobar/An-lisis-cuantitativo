@@ -1,0 +1,299 @@
+###############################################################################
+# Clase 1
+# Profesora: Natalia Escobar Váquiro
+###############################################################################
+
+# ===========================
+# 1. Preparación del entorno
+# ===========================
+
+# 1.1. Asignar y comprobar el directorio de trabajo
+# Cambia la ruta entre comillas por la carpeta donde guardarás tus proyectos.
+setwd("~/proyectos/clase_R_cap3")  
+getwd()    # Muestra la carpeta actual de trabajo
+
+# 1.2. Limpiar el espacio de trabajo
+# Elimina todos los objetos previos para evitar conflictos.
+rm(list = ls())  
+
+# 1.3. Instalar y cargar paquetes (si es necesario)
+# install.packages("tidyverse")  # Descomenta para instalar
+# library(tidyverse)             # Carga colección de paquetes útiles
+
+# ==========================
+# 2. Comentarios en R
+# ==========================
+# Todo lo que escribas después del símbolo # es un comentario y no se ejecuta.
+1 + 2       # este comentario explica que 1+2 = 3
+# comentario en línea
+# otro comentario
+
+# ==========================
+# 3. Operaciones numéricas
+# ==========================
+# Suma
+1 + 2       # suma → 3
+
+# Resta
+4 - 5       # resta → -1
+
+# Multiplicación
+2 * 56      # multiplicación → 112
+
+# División
+12 / 5      # división → 2.4
+
+# Exponente
+3 ^ 2       # exponente → 9
+
+# Uso de paréntesis para controlar orden de operaciones
+(1 + 2) * 4 # → 12
+
+# Errores tipográficos
+# 1 = 2     # esto producirá un error: "invalid left-hand side of assignment"
+
+# Orden de operaciones
+# PEDMAS: Paréntesis, Exponentes, División, Multiplicación, Adición, Sustracción
+
+# ==========================
+# 4. Variables y asignación
+# ==========================
+# Asignación con <- y ->
+ventas <- 500        # asigna 500 a 'ventas'
+470 -> ventas        # también válido, asigna 470 a 'ventas'
+ventas               # imprime el valor actual de 'ventas' (470)
+
+# Eliminar un objeto
+rm(ventas)           # elimina 'ventas' del entorno
+
+# Crear otras variables
+precio <- 500        # precio unitario
+ventas <- 120        # ejemplo de ventas en unidades
+ingreso <- ventas * precio      # ingreso total
+ingreso1 <- ingreso + 200000    # ingreso + ajuste
+
+# Convenciones de nombres:
+# - Letras (mayúsculas/minúsculas), números, '.', '_' permitidos
+# - No espacios ni guiones
+# - Sensible a mayúsculas/minúsculas
+# - Debe empezar con letra o '.'
+# - Ejemplos: ventas.mensuales, ventas_mensuales, VentasMensuales
+
+# ==========================
+# 5. Funciones matemáticas
+# ==========================
+# sqrt(x): raíz cuadrada
+sqrt(25)    # → 5
+
+# abs(x): valor absoluto
+abs(-4)     # → 4
+
+# round(x, digits): redondeo
+round(4.345)                # sin especificar digits → 4
+round(4.356, digits = 1)    # → 4.4
+round(digits = 2, x = 3.45677) # argumentos nombrados → 3.46
+round(3.788, 3)             # → 3.788
+
+# ==========================
+# 6. Vectores numéricos
+# ==========================
+# Crear un vector con varios valores
+ventas.mensuales <- c(0, 200, 400, 280, 450, 590,
+                      390, 289, 189, 134, 120, 289)
+ventas.mensuales
+
+# Operaciones vectorizadas
+precio <- 500
+ingreso.mensual <- ventas.mensuales * precio
+ingreso.mensual
+
+# Dividir por vector de días del mes
+dias.por.mes <- c(31,28,31,30,31,30,31,31,30,31,30,31)
+ingreso.mensual / dias.por.mes  # ingreso promedio diario
+
+# Indexación
+ventas.mensuales[4]         # cuarto elemento
+ventas.abril <- ventas.mensuales[4]  # guardar elemento en nueva variable
+
+# Modificar un elemento
+ventas.mensuales[1] <- 130  # cambia el primer valor a 130
+ventas.mensuales
+
+# Longitud de un vector
+length(ventas.mensuales)    # → 12
+
+# Secuencias
+meses_numeric <- 1:12       # 1,2,...,12
+z <- seq(1, 20, by = 0.5)   # 1.0, 1.5, ..., 20.0
+
+# Repeticiones
+v_rep <- rep(5, times = 3)  # 5,5,5
+
+# ==========================
+# 7. Vectores de texto
+# ==========================
+hola <- "natalia"
+meses <- c("enero", "febrero", "marzo", "abril",
+           "mayo", "junio", "julio", "agosto",
+           "septiembre", "octubre", "noviembre", "diciembre")
+meses[2]                    # "febrero"
+
+# Contar caracteres
+nchar(hola)                 # → 7
+nchar(meses)                # vector de longitudes
+
+# ==========================
+# 8. Operaciones lógicas
+# ==========================
+# Comparaciones
+2 + 2 == 4                  # TRUE
+2 + 2 == 5                  # FALSE
+3 * 3 + 4 * 4 == 5 * 5      # TRUE
+
+# Operadores relacionales
+2 < 3                       # TRUE
+3 <= 1                      # FALSE
+2 > 3                       # FALSE
+2 >= 2                      # TRUE
+3 != 2                      # TRUE
+
+# Operadores lógicos
+(TRUE) | (FALSE)            # OR → TRUE
+(TRUE) & (FALSE)            # AND → FALSE
+!(2 == 3)                   # NOT → TRUE
+
+# ==========================
+# 9. Vectores lógicos e indexación lógica
+# ==========================
+# Vector lógico de ejemplo
+x <- c(TRUE, TRUE, FALSE, FALSE)
+
+# Máscara lógica usando un vector existente
+mascara_alta <- ventas.mensuales > 350
+mascara_alta
+
+# Usar máscara para filtrar
+meses[mascara_alta]         # meses con ventas > 350
+meses[ventas.mensuales < 350]  # meses con ventas < 350
+
+# Otro vector categórico
+inventario <- c("alto","medio","bajo","bajo","alto",
+                "alto","medio","alto","bajo","medio","bajo","alto")
+# Filtrar por condición combinada
+meses[inventario != "alto"]
+meses[inventario == "medio" | inventario == "bajo"]
+
+# ==========================
+# 10. Datos aleatorios
+# ==========================
+# Valores aleatorios normales
+x_norm <- rnorm(1000)                # distribución normal
+x_norm <- round(rnorm(1000), 2)      # redondeado a 2 decimales
+
+# Muestra aleatoria sin/sobre reemplazo
+y_sin_rep <- sample(1:500, 200, replace = FALSE)
+y_con_rep <- sample(1:500, 200, replace = TRUE)
+
+# Secuencia fina
+z_seq <- seq(1, 20, by = 0.5)
+
+# ==========================
+# 11. Funciones estadísticas básicas
+# ==========================
+sum(ventas.mensuales)                # suma total de ventas
+mean(ventas.mensuales)               # media
+median(ventas.mensuales)             # mediana
+sd(ventas.mensuales)                 # desviación estándar
+min(ventas.mensuales)                # valor mínimo
+max(ventas.mensuales)                # valor máximo
+summary(ventas.mensuales)            # resumen estadístico completo
+
+# ===============================
+# 11.1. Funciones estadísticas por grupos
+# ===============================
+
+# -----------------------------------------------
+# Paso 0. Instalar y cargar el paquete necesario
+# -----------------------------------------------
+# Si aún no tienes el paquete dplyr, descomenta y ejecuta esta línea:
+# install.packages("dplyr")
+
+# Cargar el paquete dplyr
+library(dplyr)
+
+# -----------------------------------------------
+# Paso 1. Crear un data frame de ejemplo
+# -----------------------------------------------
+datos <- data.frame(
+  region = c("Norte", "Sur", "Norte", "Sur", "Norte", "Sur", "Norte", "Sur"),
+  ventas.mensuales = c(1200, 1350, 1100, 980, 1420, 1250, 1300, NA)
+)
+
+# -----------------------------------------------
+# ¿Qué es el operador %>% ?
+# -----------------------------------------------
+# Se llama "pipe" y se lee como "y luego".
+# Toma el resultado de la izquierda y lo pasa como argumento
+# principal de la función a la derecha.
+# Hace que el código se lea paso a paso, como una receta.
+
+# ===============================================
+# PARTE 1: Estadísticas generales (sin agrupar)
+# ===============================================
+
+# 1.1 Calcular solo la media
+datos %>%
+  summarise(
+    promedio = mean(ventas.mensuales, na.rm = TRUE)
+  )
+
+# 1.2 Calcular estadísticas básicas completas
+datos %>%
+  summarise(
+    n_total            = n(),                                        # Número total de filas
+    n_no_NA            = sum(!is.na(ventas.mensuales)),              # Observaciones válidas
+    suma               = sum(ventas.mensuales, na.rm = TRUE),        # Suma total
+    promedio           = mean(ventas.mensuales, na.rm = TRUE),       # Media
+  )
+
+# ===============================================
+# PARTE 2: Estadísticas por grupo (con group_by)
+# ===============================================
+
+# 2.1 Calcular solo la media por grupo
+datos %>%
+  group_by(region) %>%
+  summarise(
+    promedio = mean(ventas.mensuales, na.rm = TRUE)
+  )
+
+# 2.2 Calcular estadísticas básicas completas por grupo
+datos %>%
+  group_by(region) %>%
+  summarise(
+    n_total            = n(),                                        # Total de filas por grupo
+    n_no_NA            = sum(!is.na(ventas.mensuales)),              # Observaciones válidas
+    suma               = sum(ventas.mensuales, na.rm = TRUE),        # Suma total
+    promedio           = mean(ventas.mensuales, na.rm = TRUE),       # Media
+  )
+
+
+
+# ==========================
+# 12. Ayuda y documentación
+# ==========================
+?mean         # abre ayuda de la función mean()
+help("round") # ayuda de round
+help.search("linear model")  # búsqueda en la ayuda del paquete
+
+# ==========================
+# 13. Guardar y cargar objetos
+# ==========================
+# Guardar en archivo .RData
+save(ventas.mensuales, ingreso.mensual, file = "datos_cap3.RData")
+
+# Limpiar entorno y recargar
+rm(list = ls())
+load("datos_cap3.RData")
+ventas.mensuales
+ingreso.mensual
