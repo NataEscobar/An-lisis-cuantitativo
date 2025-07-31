@@ -194,8 +194,8 @@ x_norm <- round(rnorm(1000), 2)      # redondeado a 2 decimales
 y_sin_rep <- sample(1:500, 200, replace = FALSE)
 y_con_rep <- sample(1:500, 200, replace = TRUE)
 
-# Secuencia fina
-z_seq <- seq(1, 20, by = 0.5)
+
+###################################################### aquí vamos
 
 # ==========================
 # 11. Funciones estadísticas básicas
