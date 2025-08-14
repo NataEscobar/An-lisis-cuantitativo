@@ -57,7 +57,7 @@ bd1$Gini[c(2, 7)] <- NA
 bd1$PIBpc[c(4, 9)] <- NA
 
 # Contamos NAs antes y después
-table(is.na(bd1$Gini))
+table(is.na(bd1$Gini)) 
 table(is.na(bd1$PIBpc))
 
 # 5.2 Sustituir NAs de Gini por un valor marcador (-99)
@@ -74,13 +74,14 @@ bd1 <- bd1 %>%
   )
 
 # Recuento y proporción
-table(bd1$pib_evh, useNA = "ifany")
-prop.table(table(bd1$pib_evh))
+table(bd1$pib_evh, useNA = "ifany") # Cuenta cuántas veces aparece cada valor de la variable pib_evh
+# useNA = "ifany": Hace que también se cuenten los valores NA (faltantes), si los hay.
+prop.table(table(bd1$pib_evh)) #Convierte esa tabla de frecuencias en proporciones (porcentaje sobre el total)
 
 # 5.4 Recodificar “PIBpc” en 4 categorías:
 #     1 = ≤ 5000, 2 = (5000,10000], 3 = (10000,15000], 4 = >15000
 bd1 <- bd1 %>%
-  mutate(
+  mutate( #Crea una nueva variable o modifica una existente
     PIBpc_cat = case_when(
       is.na(PIBpc)               ~ NA_character_,
       PIBpc <= 5000              ~ "≤  5.000",
@@ -145,6 +146,8 @@ library(readr)           # Importar/exportar CSV
 library(readxl)          # Importar Excel
 library(writexl)         # Exportar Excel
 library(haven)           # Importar/exportar Stata y SPSS
+
+#Debemos configurar el direcgtorio porque vamos a guardar
 
 #### 1. CREAR DATOS DE EJEMPLO ####
 # Generamos un tibble con tres variables para demostrar
