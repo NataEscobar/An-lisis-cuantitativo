@@ -1,0 +1,215 @@
+############################################################
+# Clase 2
+# -------------------------------------------------------- #
+# En esta sesión trabajaremos con una base simulada para:  #
+#  1) Practicar limpieza y manipulación sin depender de   #
+#     archivos externos                                   #
+#  2) Explorar, recodificar y filtrar datos               #
+#  3) Aplicar factores y recuentos                        #
+############################################################
+
+#### 0. PREÁMBULO: limpiar y organizar ####
+rm(list = ls())        # Borra todos los objetos de la sesión
+cat("\014")            # Limpia la consola (Ctrl+L)
+
+#### 1. CONFIGURACIÓN DEL ENTORNO ####
+# (No necesitamos cambiar directorio porque vamos a simular datos)
+
+#### 2. INSTALACIÓN Y CARGA DE PAQUETES ####
+# install.packages(c("tidyverse", "psych", "lsr"))  # solo 1ª vez
+library(tidyverse)  # Incluye dplyr, tibble, ggplot2, etc.
+library(psych)      # describe(), skim()
+library(lsr)        # who()
+
+#### 3. SIMULACIÓN DE DATOS ####
+# Creamos una base sintética de 10 países con indicadores socioeconómicos
+set.seed(2025)  # Para reproducibilidad
+
+bd1 <- tibble(
+  pais           = paste("País", LETTERS[1:10]),
+  PIBpc          = round(runif(10, min = 1000, max = 20000), 0),
+  evida_hombres  = round(rnorm(10, mean = 72, sd = 5), 1),
+  evida_mujeres  = round(rnorm(10, mean = 75, sd = 4), 1),
+  Gini           = round(runif(10, min = 25, max = 60), 1)
+)
+
+# Veamos la base simulada
+glimpse(bd1)
+print(bd1)
+
+#### 4. EXPLORACIÓN INICIAL ####
+# 4.1 Primeras y últimas filas
+head(bd1, 5)       # Primeras 5 observaciones
+tail(bd1, 5)       # Últimas 5 observaciones
+
+# 4.2 Nombres y estructura
+names(bd1)         # Nombres de columnas
+dim(bd1)           # Dimensiones de la tibble
+str(bd1)           # Clases y estructura
+
+# 4.3 Estadísticos básicos
+summary(bd1)                   # Resumen general
+describe(bd1 %>% select(-pais))  # Más detalle con psych
+
+#### 5. LIMPIEZA Y RECODIFICACIÓN ####
+# 5.1 Introducir algunos NA para practicar
+bd1$Gini[c(2, 7)] <- NA
+bd1$PIBpc[c(4, 9)] <- NA
+
+# Contamos NAs antes y después
+table(is.na(bd1$Gini))
+table(is.na(bd1$PIBpc))
+
+# 5.2 Sustituir NAs de Gini por un valor marcador (-99)
+bd1 <- bd1 %>%
+  mutate(
+    Gini = replace_na(Gini, -99)
+  )
+
+# 5.3 Crear indicador lógico “pib_evh”:
+#     1 si PIBpc ≥ 15000 AND e. vida hombres > 75; 0 si no
+bd1 <- bd1 %>%
+  mutate(
+    pib_evh = as.integer(PIBpc >= 15000 & evida_hombres > 75)
+  )
+
+# Recuento y proporción
+table(bd1$pib_evh, useNA = "ifany")
+prop.table(table(bd1$pib_evh))
+
+# 5.4 Recodificar “PIBpc” en 4 categorías:
+#     1 = ≤ 5000, 2 = (5000,10000], 3 = (10000,15000], 4 = >15000
+bd1 <- bd1 %>%
+  mutate(
+    PIBpc_cat = case_when(
+      is.na(PIBpc)               ~ NA_character_,
+      PIBpc <= 5000              ~ "≤  5.000",
+      PIBpc <= 10000             ~ "5.001–10.000",
+      PIBpc <= 15000             ~ "10.001–15.000",
+      TRUE                        ~ "> 15.000"
+    ),
+    PIBpc_cat = factor(
+      PIBpc_cat,
+      levels = c("≤  5.000", "5.001–10.000", "10.001–15.000", "> 15.000")
+    )
+  )
+
+table(bd1$PIBpc_cat, useNA = "ifany")
+
+#### 6. CREACIÓN DE SUBCONJUNTOS ####
+# 6.1 Eliminar filas con ANY NA en PIBpc o evida_hombres
+bd_complete <- bd1 %>%
+  drop_na(PIBpc, evida_hombres)
+
+# 6.2 Tres filtros diferentes
+f1 <- bd1 %>% filter(evida_hombres > 75)
+f2 <- bd1 %>% filter(PIBpc > 12000, evida_mujeres > 78)
+f3 <- bd1 %>% filter(pib_evh == 1 | Gini == -99)
+
+# 6.3 Selección de columnas
+e_vida <- bd1 %>% select(pais, evida_hombres, evida_mujeres)
+no_evida <- bd1 %>% select(-evida_hombres, -evida_mujeres)
+
+#### 7. VALORES ESPECIALES ####
+# Inf, NaN, NA, NULL ejemplos rápidos
+print(1/0); is.infinite(1/0)    # Inf
+print(0/0); is.nan(0/0)         # NaN
+v <- c(2, NA, 5); is.na(v)      # NA
+mean(v, na.rm = TRUE)           # media ignorando NA
+z <- NULL; is.null(z)           # NULL
+
+#### 8. FACTORES Y ETIQUETAS ####
+# 8.1 Crear factor desde nombre de país
+bd1 <- bd1 %>%
+  mutate(
+    region = factor(
+      sample(c("Norte", "Sur", "Este", "Oeste"), n(), replace = TRUE),
+      levels = c("Norte","Este","Sur","Oeste")
+    )
+  )
+
+# 8.2 Resumen de factor
+summary(bd1$region)
+
+
+
+############################################################
+# Importación y exportación de datos en R                  #
+# Formatos: CSV, Excel (.xlsx), Stata (.dta), SPSS (.sav)  #
+############################################################
+
+#### 0. PREPARAR ENTORNO ####
+# Limpiar workspace y cargar librerías necesarias
+rm(list = ls())          # Borra todos los objetos
+library(readr)           # Importar/exportar CSV
+library(readxl)          # Importar Excel
+library(writexl)         # Exportar Excel
+library(haven)           # Importar/exportar Stata y SPSS
+
+#### 1. CREAR DATOS DE EJEMPLO ####
+# Generamos un tibble con tres variables para demostrar
+df_ejemplo <- tibble(
+  id     = 1:6,
+  pais   = c("Colombia","México","Perú","Chile","Ecuador","Brasil"),
+  valor  = round(rnorm(6, mean = 100, sd = 15), 1)
+)
+print(df_ejemplo)
+
+#### 2. CSV (Comma-Separated Values) ####
+
+# 2.1 Exportar a CSV (comas como separador)
+# write_csv() proviene de readr y guarda UTF-8 sin factor levels
+write_csv(df_ejemplo, "df_ejemplo.csv")
+# write.csv() base R también funciona, pero convierte factores a texto por defecto
+# write.csv(df_ejemplo, "df_ejemplo_base.csv", row.names = FALSE)
+
+# 2.2 Importar desde CSV
+df_csv <- read_csv("df_ejemplo.csv")
+# Para archivos con separador distinto, usar read_delim():
+# df_csv2 <- read_delim("archivo.csv", delim = ";")
+glimpse(df_csv)  # Estructura del objeto importado
+
+#### 3. Excel (.xlsx) ####
+
+# 3.1 Exportar a Excel
+# write_xlsx() del paquete writexl crea un .xlsx simple
+write_xlsx(df_ejemplo, "df_ejemplo.xlsx")
+# Con openxlsx o XLConnect se pueden hacer formatos más avanzados
+
+# 3.2 Importar desde Excel
+# read_excel() detecta automáticamente el tipo de cada columna
+df_xlsx <- read_excel("df_ejemplo.xlsx", sheet = 1)
+glimpse(df_xlsx)
+
+#### 4. Stata (.dta) ####
+
+# 4.1 Exportar a formato Stata
+# write_dta() del paquete haven conserva etiquetas de variable y valores
+write_dta(df_ejemplo, "df_ejemplo.dta")
+
+# 4.2 Importar desde Stata
+df_dta <- read_dta("df_ejemplo.dta")
+glimpse(df_dta)
+
+#### 5. SPSS (.sav) ####
+
+# 5.1 Exportar a formato SPSS
+# write_sav() guarda etiquetas, formatos y missing values
+write_sav(df_ejemplo, "df_ejemplo.sav")
+
+# 5.2 Importar desde SPSS
+df_sav <- read_sav("df_ejemplo.sav")
+glimpse(df_sav)
+
+#### 6. COMPROBACIONES FINALES ####
+
+# Comparar las estructuras importadas
+identical(df_ejemplo, df_csv)  # TRUE si son iguales
+identical(df_ejemplo, df_xlsx)
+identical(df_ejemplo, df_dta)
+identical(df_ejemplo, df_sav)
+
+# Limpiar archivos de ejemplo (opcional)
+# file.remove(c("df_ejemplo.csv", "df_ejemplo.xlsx",
+#               "df_ejemplo.dta","df_ejemplo.sav"))
+
