@@ -1,0 +1,494 @@
+###############################################################################
+# Introducción a la programación básica en R
+###############################################################################
+
+# Ejemplo de contenido de "mi_script.R":
+# ----------------------------------------------------------
+# NOTA: Puedes guardar este código en un archivo llamado
+# "mi_script.R" y ejecutarlo todo con la función `source()`:
+#    source("mi_script.R")
+# Esto hará que R lea y ejecute el script línea por línea.
+# Muy útil para automatizar tareas y organizar tu código.
+# ----------------------------------------------------------
+
+# 1) Definimos un mensaje de saludo
+# ----------------------------------------------------------
+# OBJETIVO: Este bloque tiene como finalidad introducir el uso
+# de scripts en R. Se muestra cómo declarar una variable,
+# asignarle un texto y luego visualizarlo en la consola.
+# También permite entender la diferencia entre escribir código
+# directamente en la consola o dentro de un archivo .R que
+# puede ejecutarse completo con `source()`.
+# ----------------------------------------------------------
+mensaje <- "¡Hola Mundo desde un script!"    # Asigna un texto a la variable 'mensaje'
+print(mensaje)                               # Imprime el contenido de 'mensaje' en la consola
+#    - print(): función genérica que muestra el valor y el tipo de objeto
+
+# 2) Realizamos un cálculo simple
+# ----------------------------------------------------------
+# OBJETIVO: Este bloque muestra cómo realizar una operación
+# matemática sencilla en R (suma de una secuencia) y cómo
+# presentar el resultado de forma clara y legible para el usuario.
+# Se introduce el uso de vectores (1:10), funciones básicas
+# como `sum()`, y la función `cat()` para imprimir textos amigables.
+# ----------------------------------------------------------
+resultado <- sum(1:10)                       # sum(1:10) suma los números del 1 al 10
+cat("La suma de 1 a 10 es:", resultado, "\n")
+#    - cat(): concatena y envía texto al dispositivo de salida sin mostrar comillas
+
+# 3) Carga de paquetes de forma segura
+if (!require(stats)) {
+  install.packages("stats")
+  library(stats)
+}
+#    - require(): intenta cargar sin detener la ejecución si falla
+
+# ——  Bucles: while y for ——
+
+# ----------------------------------------------------------
+# OBJETIVO: Explorar estructuras de repetición (bucles) en R.
+# - El bucle `while` repite instrucciones mientras una condición sea TRUE.
+# - El bucle `for` recorre secuencias conocidas, como vectores.
+# Son herramientas clave para automatizar tareas repetitivas.
+# ----------------------------------------------------------
+
+# while: repetir hasta que se deje de cumplir la condición
+# Este bucle suma 17 en cada iteración hasta que el resultado sea mayor o igual a 1000
+# Inicializamos la variable x con valor 0
+x <- 0    
+# Abrimos un bucle while: se repetirá mientras la condición (x < 1000) sea TRUE
+while (x < 1000) {
+  # En cada iteración, aumentamos el valor de x en 17
+  # Es decir, x toma el valor anterior y le suma 17
+  x <- x + 17          
+}
+# Cuando x ya no es menor que 1000, el bucle termina
+# El valor final de x será el primero que haga que la condición (x < 1000) deje de cumplirse
+
+# Al finalizar, x contiene el primer múltiplo de 17 mayor o igual a 1000
+print(paste("El múltiplo de 17 ≥1000 es", x))
+
+# for: iterar por una secuencia o vector concreto
+
+# Ejemplo 1: imprimir "hola" tres veces
+
+# Iniciamos un bucle for. 
+# La variable i toma los valores de la secuencia 1, 2 y 3, en ese orden.
+for (i in 1:3) {             
+  
+  # En cada iteración del bucle, se ejecuta esta línea
+  # Aquí simplemente se imprime la palabra "hola"
+  print("hola")              
+}
+
+# Resultado esperado en la consola:
+# [1] "hola"
+# [1] "hola"
+# [1] "hola"
+
+
+# Ejemplo 2: recorrer un vector de palabras, medir longitud y convertirlas a mayúsculas
+
+# Definimos un vector de 4 elementos de tipo texto (caracteres)
+palabras <- c("data", "science", "en", "R")
+
+# Iniciamos un bucle for: la variable w irá tomando uno a uno 
+# los valores del vector 'palabras' (primero "data", luego "science", etc.)
+for (w in palabras) {         
+  
+  # Calculamos la longitud de la palabra (número de caracteres)
+  longitud <- nchar(w)        
+  
+  # Convertimos la palabra a mayúsculas
+  mayus <- toupper(w)         
+  
+  # Construimos un mensaje de texto combinando:
+  # - la palabra original (w)
+  # - la longitud (longitud)
+  # - la versión en mayúsculas (mayus)
+  # paste0() une texto sin espacios extra
+  msg <- paste0("La palabra '", w, "' tiene ", longitud, " letras (",
+                mayus, " en mayúsculas)")   
+  
+  # Imprimimos el mensaje en la consola
+  print(msg)                  
+}
+
+# --- Resultado en consola ---
+# [1] "La palabra 'data' tiene 4 letras (DATA en mayúsculas)"
+# [1] "La palabra 'science' tiene 7 letras (SCIENCE en mayúsculas)"
+# [1] "La palabra 'en' tiene 2 letras (EN en mayúsculas)"
+# [1] "La palabra 'R' tiene 1 letras (R en mayúsculas)"
+
+# Condicionales: if, else, ifelse —— -----------------------------------
+# Los condicionales permiten ejecutar bloques de código distintos 
+# dependiendo de si se cumple (TRUE) o no (FALSE) una condición lógica.
+
+# Guardamos la fecha de hoy en un objeto.
+# Sys.Date() devuelve la fecha actual en formato "YYYY-MM-DD".
+hoy <- Sys.Date()                             
+
+# Obtenemos el nombre del día de la semana a partir de la fecha.
+# weekdays() transforma el objeto de clase Date en un texto, por ejemplo "Monday".
+dia <- weekdays(hoy)                          
+
+# Iniciamos un condicional básico con if.
+# La condición es: ¿el valor de 'dia' es exactamente "Monday"?
+# Ojo: la comparación de texto distingue mayúsculas/minúsculas (case sensitive).
+if (dia == "Monday") {                        
+  
+  # Si la condición es TRUE (hoy es lunes), se ejecuta este bloque:
+  print("¡Uy, es lunes! Hora de café")        
+  
+} else {
+  # Si la condición es FALSE (hoy no es lunes), se ejecuta este otro bloque:
+  print(paste("Hoy es", dia, "y seguimos trabajando"))  
+}
+
+# --- Ejemplo de resultados posibles ---
+# Si hoy fuera lunes:   [1] "¡Uy, es lunes! Hora de café"
+# Si hoy fuera martes:  [1] "Hoy es Tuesday y seguimos trabajando"
+
+# Condicional vectorizado: ifelse(condición, valor_si_TRUE, valor_si_FALSE)
+
+# Creamos un vector numérico con valores negativos, cero y positivos
+nums <- c(-2, 0, 3, -5, 8)                    
+
+# Aplicamos ifelse() de forma vectorizada:
+# - Para cada elemento de 'nums', evalúa la condición (nums[i] >= 0)
+# - Si la condición es TRUE → asigna "no negativo"
+# - Si la condición es FALSE → asigna "negativo"
+clasif <- ifelse(nums >= 0, "no negativo", "negativo")
+
+# Unimos en un data.frame para ver claro el valor original y su clasificación
+print(data.frame(nums, clasif))               
+
+# --- Resultado esperado ---
+#   nums      clasif
+# 1   -2    negativo
+# 2    0 no negativo
+# 3    3 no negativo
+# 4   -5    negativo
+# 5    8 no negativo
+
+
+# Definición de funciones propias —— ----------------------------------
+# Las funciones permiten encapsular código en un bloque con nombre.
+# Ventaja: se puede reutilizar varias veces sin repetir instrucciones.
+# Sintaxis general:
+# nombre_funcion <- function(arg1, arg2 = valor_por_defecto, ...) {
+#   cuerpo de la función
+#   return(valor_de_salida)
+# }
+
+# Ejemplo 1: función que multiplica su argumento de entrada por 4
+
+quadruple <- function(x) {        # Definimos una función llamada 'quadruple'
+  # 'x' es el argumento (la entrada de la función)
+  
+  y <- x * 4                      # Dentro de la función: multiplicamos 'x' por 4
+  # y guardamos el resultado en la variable local 'y'
+  
+  return(y)                       # La función devuelve (retorna) el valor de 'y'
+}                                 # Fin de la función
+
+# Usamos la función llamándola por su nombre y pasando un valor a 'x'
+print(quadruple(5))               # Calcula 5 * 4 y devuelve 20
+
+# Ejemplo 2: función con argumento por defecto 'exp'
+
+# Definimos la función 'potencia' con dos argumentos:
+# - 'base': el número a elevar
+# - 'exp': el exponente (tiene valor por defecto 2, o sea "cuadrado")
+potencia <- function(base, exp = 2) {          
+  return(base ^ exp)          # ^ es el operador de potencia en R (base^exp)
+}
+
+# Llamamos la función con un solo argumento:
+print(potencia(3))    # Usa exp=2 por defecto → 3^2 = 9
+
+# Llamamos la función pasando ambos argumentos:
+print(potencia(3, 3)) # Sobrescribimos el valor por defecto → 3^3 = 27
+
+
+# Ejemplo 3: función que acepta múltiples argumentos con '...'
+
+# Definimos la función 'dobleMax'
+# - '...' permite pasar cualquier número de argumentos (flexibilidad total)
+dobleMax <- function(...) {                  
+  m <- max(...)               # max() calcula el mayor valor entre todos los argumentos
+  return(2 * m)               # Devolvemos el doble de ese máximo
+}
+
+# Llamamos la función pasando varios números separados por coma
+print(dobleMax(1, 5, 3, 10))   # El máximo es 10, el doble es 20
+
+
+# Ejemplo 4: función para encontrar la moda de un vector numérico o de texto
+
+# Definimos la función 'miModa'
+miModa <- function(x) {                        
+  
+  # Calculamos la frecuencia de cada valor único en x usando table()
+  frec <- table(x)                             
+  
+  # Identificamos la frecuencia máxima
+  max_frec <- max(frec)                        
+  
+  # Filtramos los valores que alcanzan esa frecuencia máxima
+  modas <- names(frec[frec == max_frec])       
+  
+  # Si hay varias modas, las devolvemos todas como vector de caracteres
+  return(modas)                                
+}
+
+# --- Ejemplos de uso ---
+
+# Ejemplo con un vector numérico
+nums <- c(2, 3, 5, 2, 8, 3, 2, 5, 3, 3)
+print(miModa(nums))   # Devuelve "3" (aparece 4 veces, más que los demás)
+
+# Ejemplo con un vector de texto
+frutas <- c("pera", "manzana", "pera", "uva", "pera", "uva", "uva")
+print(miModa(frutas)) # Devuelve "pera" y "uva" (ambas aparecen 3 veces)
+
+
+# Bucles implícitos: apply, sapply, tapply —— -------------------------
+# Estas funciones permiten aplicar una función a todos los elementos de un objeto
+# sin necesidad de escribir un bucle "for" explícito.
+
+# sapply(): aplica una función (FUN) a cada elemento de un vector o lista
+frutas <- c("pera", "manzana", "uva")          # Creamos un vector de texto con 3 elementos
+
+# Aplicamos nchar() a cada elemento del vector 'frutas'
+# - nchar("pera")    -> 4
+# - nchar("manzana") -> 7
+# - nchar("uva")     -> 3
+# sapply() recorre el vector y guarda los resultados
+longs <- sapply(frutas, nchar)                
+
+# Nota: sapply() intenta simplificar el resultado a un vector o matriz si es posible.
+# En este caso lo simplifica a un vector numérico de longitudes.
+print(longs)                                  
+
+# Ejemplo 2 de sapply(): calcular funciones matemáticas sobre un vector
+
+# Creamos un vector de números
+nums <- c(1, 2, 3, 4, 5)
+
+# Usamos sapply() para calcular el cuadrado de cada número
+cuadrados <- sapply(nums, function(x) x^2)
+
+print(cuadrados)
+# Resultado:
+#  1  2  3  4  5 
+#  1  4  9 16 25 
+
+# También podemos aplicar funciones predefinidas
+# Ejemplo: obtener la raíz cuadrada de cada número
+raices <- sapply(nums, sqrt)
+
+print(raices)
+# Resultado:
+#        1        2        3        4        5 
+# 1.000000 1.414214 1.732051 2.000000 2.236068
+
+
+
+# tapply(): aplica una función (FUN) a subconjuntos de datos definidos por un factor
+
+# Tenemos el vector 'longs' de la sección anterior (longitud de cada fruta):
+#   pera = 4, manzana = 7, uva = 3
+longs
+#   pera manzana     uva 
+#      4       7       3 
+
+# Creamos un factor que define a qué grupo pertenece cada fruta
+# En este caso: "pera" → A, "manzana" → B, "uva" → A
+grupos <- factor(c("A", "B", "A"))             
+
+# Usamos tapply() para calcular el promedio de longitudes por grupo
+# - Primer argumento: el vector con los valores (longs)
+# - Segundo argumento: el factor que indica a qué grupo pertenece cada valor
+# - Tercer argumento: la función que queremos aplicar (mean = promedio)
+promedio_por_grupo <- tapply(longs, grupos, mean)
+
+# Imprimimos el resultado: vector con el promedio de cada grupo
+print(promedio_por_grupo)
+
+# --- Resultado esperado ---
+#   A   B 
+# 3.5   7
+#
+# Explicación:
+# Grupo A = (pera=4, uva=3) → promedio = (4+3)/2 = 3.5
+# Grupo B = (manzana=7)     → promedio = 7
+
+# Ejemplo 2 de tapply(): calcular el promedio de notas por curso
+
+# Vector de notas de estudiantes
+notas <- c(3.5, 4.0, 2.8, 3.9, 4.5, 3.0, 4.2, 2.5)
+
+# Vector de cursos a los que pertenece cada estudiante
+cursos <- factor(c("A", "A", "B", "B", "C", "C", "C", "A"))
+
+# Usamos tapply() para calcular el promedio de notas por curso
+promedio_por_curso <- tapply(notas, cursos, mean)
+
+print(promedio_por_curso)
+
+# --- Resultado esperado ---
+#        A        B        C 
+# 3.333333 3.350000 3.900000
+#
+# Explicación:
+# Curso A: (3.5, 4.0, 2.5) → promedio = 3.33
+# Curso B: (2.8, 3.9)      → promedio = 3.35
+# Curso C: (4.5, 3.0, 4.2) → promedio = 3.90
+
+
+# apply(): aplica una función (FUN) a filas o columnas de una matriz.
+# MARGIN = 1 → aplica por filas
+# MARGIN = 2 → aplica por columnas
+
+# Creamos una matriz de 3 filas x 4 columnas con los números del 1 al 12
+# byrow=TRUE hace que los números se acomoden por filas, no por columnas
+datos_mat <- matrix(1:12, nrow=3, byrow=TRUE)
+
+# La matriz 'datos_mat' luce así:
+#      [,1] [,2] [,3] [,4]
+# [1,]    1    2    3    4
+# [2,]    5    6    7    8
+# [3,]    9   10   11   12
+
+# Calculamos la suma de cada fila (MARGIN=1)
+suma_filas <- apply(datos_mat, MARGIN = 1, FUN = sum)
+
+# Calculamos la suma de cada columna (MARGIN=2)
+suma_columnas <- apply(datos_mat, MARGIN = 2, FUN = sum)
+
+# Imprimimos los resultados
+print(suma_filas)     
+# Resultado: 10 26 42   (suma de cada fila)
+
+print(suma_columnas)  
+# Resultado: 15 18 21 24  (suma de cada columna)
+
+
+# —— ¿apply() también funciona con data frames? —— ---------------------------
+
+# Creamos un data frame con columnas de distinto tipo
+df <- data.frame(
+  nombre = c("Ana", "Luis", "Sofía"),   # texto
+  edad   = c(23, 35, 29),               # numérico
+  nota   = c(4.5, 3.8, 4.2)             # numérico
+)
+
+# Intentamos usar apply() sobre todo el data frame
+# OJO: como hay una columna de texto, R convierte todo en caracteres
+# y la suma no tiene sentido → dará un resultado inesperado o error
+try(apply(df, 1, sum))   
+
+# Solución 1: seleccionar solo las columnas numéricas
+suma_num <- apply(df[ , c("edad", "nota")], 1, sum)
+print(suma_num)   # Suma por fila: edad + nota
+
+# Solución 2 (más moderna): usar dplyr para trabajar con data frames
+# group_by / summarise o rowwise / mutate permiten operaciones limpias
+# install.packages("dplyr") # si no lo tienes
+library(dplyr)
+
+df_res <- df %>%
+  rowwise() %>% 
+  mutate(suma = sum(c_across(c(edad, nota))))
+
+print(df_res)
+
+# --- Resultados esperados ---
+# apply con todo el df → error o conversión rara
+# suma_num → [1] 27.5 38.8 33.2
+# df_res   → tabla original con una columna nueva "suma"
+
+
+
+# —— Monte Carlo: distribución de correlaciones entre variables independientes —— 
+# OBJETIVO:
+# Mostrar con simulaciones que, aunque dos variables independientes no están relacionadas,
+# en muestras pequeñas puede aparecer una correlación alta (positiva o negativa) solo por azar.
+# A medida que el tamaño de muestra (n) aumenta, la distribución de las correlaciones simuladas
+# se concentra alrededor de 0, que es el valor teórico esperado.
+#
+# IDEA TEÓRICA:
+# - Si X e Y son variables independientes, su correlación poblacional es 0.
+# - Sin embargo, la correlación muestral es un estimador que puede fluctuar por el azar del muestreo.
+# - Con muestras pequeñas, esa fluctuación es grande.
+# - Con muestras grandes, por el Teorema del Límite Central, el estimador converge al valor real (0).
+
+set.seed(123)   # Para reproducibilidad: siempre generará los mismos "aleatorios"
+
+# —— Varios gráficos de dispersión de variables independientes —— 
+# OBJETIVO:
+# Mostrar cómo dos variables generadas al azar (independientes) 
+# pueden dar lugar a patrones distintos en cada simulación,
+# a veces incluso aparentando correlación "falsa".
+
+set.seed(123)   # Semilla fija para reproducibilidad
+
+par(mfrow = c(2,3))  # Organizamos una grilla de 2 filas x 3 columnas = 6 gráficos
+
+# Creamos 6 simulaciones distintas
+for (i in 1:6){
+  ficti1 <- runif(10, 1, 10)    # 10 valores aleatorios uniformes
+  ficti2 <- runif(10, 1, 10)    # otro vector independiente
+  
+  plot(ficti1, ficti2,
+       main = paste("Simulación", i, "con n=10"),
+       xlab = "ficti1", ylab = "ficti2",
+       pch = 19, col = "blue")
+  
+  # Agregamos la recta de regresión ajustada
+  abline(lm(ficti1 ~ ficti2), col = "red", lwd = 2)
+}
+
+par(mfrow = c(1,1))  # Volvemos a configuración normal
+
+
+# Nota: En este ejemplo inicial vemos dos variables generadas al azar.
+# Aunque no están relacionadas, el ajuste lineal puede sugerir una "tendencia".
+# Esto ilustra cómo en muestras pequeñas el azar puede engañarnos.
+
+# Paso 2. Un bucle sencillo de práctica
+for (i in 1:5){
+  print(i + 2)   # Imprime 3, 4, 5, 6, 7
+}
+
+# Paso 3. Simulación Monte Carlo de correlaciones
+# Definimos una función para repetir el experimento muchas veces:
+simular_cor <- function(n, repeticiones = 1000){
+  # Creamos un vector vacío para almacenar los resultados de cada simulación
+  correlaciones <- numeric(repeticiones)   
+  
+  # Repetimos el proceso 'repeticiones' veces
+  for(simulacion in 1:repeticiones){
+    x <- runif(n, 1, 10)     # muestra aleatoria tamaño n (uniforme)
+    y <- runif(n, 1, 10)     # otra muestra independiente
+    correlaciones[simulacion] <- cor(x, y) # correlación de Pearson entre x e y
+  }
+  return(correlaciones) # devolvemos todas las correlaciones simuladas
+}
+
+# Paso 4. Visualización de la distribución de correlaciones para distintos tamaños de muestra
+par(mfrow = c(2,2))  # Organizar 4 gráficos en una grilla de 2x2
+
+n_values <- c(10, 50, 100, 1000)  # Diferentes tamaños de muestra
+
+for (n in n_values){
+  resultados <- simular_cor(n)
+  hist(resultados, ylim = c(0,500), xlim = c(-1,1),
+       main = paste("Distribución de correlaciones (n =", n, ")"),
+       xlab = "Correlación simulada")
+}
+
+par(mfrow = c(1,1))   # Restauramos configuración de gráficos por defecto
+
+
