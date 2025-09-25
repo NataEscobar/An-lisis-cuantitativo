@@ -1,0 +1,182 @@
+############################################################
+# DISTRIBUCIONES DE PROBABILIDAD EN R
+############################################################
+
+### 1. Distribución Binomial --------------------------------
+
+# Contexto:
+# La distribución binomial modela el número de "éxitos"
+# en una serie de ensayos de Bernoulli independientes
+# (ej: lanzar un dado, tirar una moneda, etc.).
+
+# Fórmula teórica:
+# P(X = x) = (nCx) * p^x * (1-p)^(n-x)
+
+# Ejemplo: lanzar 20 dados con probabilidad p = 1/6 de que salga calavera
+N <- 20     # número de ensayos
+x <- 4      # número de éxitos
+p <- 1/6    # probabilidad de éxito en cada ensayo
+
+# Cálculo manual
+prob_4 <- factorial(N) / (factorial(x) * factorial(N - x)) * p^x * (1 - p)^(N - x)
+prob_4
+
+# Cálculo en R con función dbinom()
+dbinom(x = 4, size = N, prob = p)
+
+# Otro ejemplo: 20 lanzamientos de moneda justa (p = 0.5)
+dbinom(x = 4, size = 20, prob = 0.5)
+
+# Probabilidad acumulada: ≤ 4 calaveras en 20 lanzamientos
+pbinom(q = 4, size = 20, prob = 1/6)
+
+
+### Visualización: Binomial con dados
+x_vals <- 0:20
+y_vals <- dbinom(x_vals, size = 20, prob = 1/6)
+
+plot(x_vals, y_vals,
+     type = "h", lwd = 3,
+     xlab = "Número de calaveras (X)",
+     ylab = "Probabilidad P(X)",
+     main = "Distribución Binomial con dados (p = 1/6)")
+
+
+### Visualización: Binomial con moneda
+y_vals <- dbinom(x_vals, size = 20, prob = 0.5)
+
+plot(x_vals, y_vals,
+     type = "h", lwd = 3,
+     xlab = "Número de caras (X)",
+     ylab = "Probabilidad P(X)",
+     main = "Distribución Binomial con moneda (p = 0.5)")
+
+
+# Cuantil: ¿cuál es el valor de X que corresponde al percentil 75?
+qbinom(0.75, size = 20, prob = 1/6)
+
+# Simulación: generar 100 experimentos binomiales
+rbinom(n = 100, size = 20, prob = 1/6)
+
+
+### 2. Distribución Normal ---------------------------------
+
+# Contexto:
+# La distribución normal es continua, con forma de campana,
+# y es la más usada en ciencias sociales.
+
+# Normal estándar (media=0, sd=1)
+x <- seq(-3, 3, 0.01)
+y <- dnorm(x, mean = 0, sd = 1)
+
+plot(x, y, type = "l", lwd = 3,
+     xlab = "Valor observado",
+     ylab = "Densidad de probabilidad",
+     main = "Distribución normal estándar")
+
+# Comparación de dos normales con distinta media
+x <- seq(0, 11, 0.01)
+y1 <- dnorm(x, mean = 4, sd = 1)
+y2 <- dnorm(x, mean = 7, sd = 1)
+
+plot(x, y1, type = "l", lwd = 3,
+     xlab = "Valor observado",
+     ylab = "Densidad de probabilidad",
+     main = "Comparación de distribuciones normales")
+lines(x, y2, lwd = 3, lty = 2)
+
+# Comparación con distinta desviación estándar
+x <- seq(0, 10, 0.01)
+y1 <- dnorm(x, mean = 5, sd = 1)
+y2 <- dnorm(x, mean = 5, sd = 2)
+
+plot(x, y1, type = "l", lwd = 3,
+     xlab = "Valor observado",
+     ylab = "Densidad de probabilidad",
+     main = "Efecto de la desviación estándar")
+lines(x, y2, lwd = 3, lty = 2)
+
+# Ejemplo de área bajo la curva entre -1 y 1
+area <- pnorm(1, mean = 0, sd = 1) - pnorm(-1, mean = 0, sd = 1)
+area  # debería ser ≈ 68%
+
+
+### 3. Distribución Chi-cuadrado ----------------------------
+
+# Construcción teórica: suma de cuadrados de normales estándar
+normal.a <- rnorm(1000)
+normal.b <- rnorm(1000)
+normal.c <- rnorm(1000)
+
+chi_df3 <- normal.a^2 + normal.b^2 + normal.c^2
+
+hist(chi_df3, freq = FALSE, ylim = c(0, 0.3),
+     main = "Distribución Chi-cuadrado con 3 gl")
+curve(dchisq(x, df = 3), add = TRUE, col = "blue", lwd = 2)
+
+
+### 4. Distribución t ---------------------------------------
+
+# Contexto:
+# Se usa cuando no conocemos la desviación estándar poblacional
+# y trabajamos con muestras pequeñas.
+
+escala <- chi_df3 / 3
+normal.d <- rnorm(1000)
+t_3 <- normal.d / sqrt(escala)
+
+hist(t_3, freq = FALSE, breaks = 50,
+     main = "Distribución t con 3 gl")
+curve(dt(x, df = 3), add = TRUE, col = "purple", lwd = 2)
+
+
+### 5. Distribución muestral de la media --------------------
+
+# Simulación: 10 muestras de 20 observaciones cada una
+set.seed(123)
+scores <- rnorm(10 * 20, mean = 0, sd = 1)
+samples <- rep(1:10, each = 20)
+my_df <- data.frame(samples, scores)
+
+library(ggplot2)
+ggplot(my_df, aes(x = scores)) +
+  geom_histogram(color = "white") +
+  facet_wrap(~samples) +
+  theme_classic() +
+  labs(title = "Distribución muestral de la media",
+       x = "Valores simulados", y = "Frecuencia")
+
+
+### 6. Distribución F ---------------------------------------
+
+# Contexto:
+# La distribución F surge como el cociente de dos chi-cuadrado
+# independientes, cada uno dividido por sus grados de libertad.
+# Se usa mucho en ANOVA y en pruebas de igualdad de varianzas.
+
+# Generamos dos chi-cuadrado simulados con diferentes gl
+chi_df1 <- rchisq(1000, df = 5)   # chi-cuadrado con 5 grados de libertad
+chi_df2 <- rchisq(1000, df = 10)  # chi-cuadrado con 10 grados de libertad
+
+# Construcción de la variable F
+F_sim <- (chi_df1 / 5) / (chi_df2 / 10)
+
+# Visualización de la simulación
+hist(F_sim, freq = FALSE, breaks = 50,
+     main = "Distribución F simulada (gl1 = 5, gl2 = 10)",
+     xlab = "Valores F")
+
+# Comparación con la densidad teórica
+curve(df(x, df1 = 5, df2 = 10),
+      from = 0, to = 5, add = TRUE,
+      col = "darkgreen", lwd = 2)
+
+# Probabilidad acumulada (P(X ≤ 2) con gl1 = 5, gl2 = 10)
+pf(2, df1 = 5, df2 = 10)
+
+# Cuantil: valor crítico al 95% (cola derecha)
+qf(0.95, df1 = 5, df2 = 10)
+
+# Simulación directa en R (100 valores)
+rF <- rf(100, df1 = 5, df2 = 10)
+head(rF)
