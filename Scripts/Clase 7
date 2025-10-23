@@ -1,0 +1,86 @@
+#Pruebas a datos continuos
+
+#prueba z para una muestra
+
+setwd("~/Library/CloudStorage/OneDrive-Personal/Cursos/Cursos 2025-2/Análisis cuantitativo/Datos para pruebas")
+
+library(readr)
+pruebaz <- read_csv("pruebaz.csv")
+calificaciones <- pruebaz$Calificaciones
+mean(calificaciones)
+
+hist(calificaciones,
+     xlim = c(40,100),
+     xlab = "Calificaciones",
+     freq = F,
+     ylim = c(0, 0.05))
+lines(x <- 40:90, dnorm(x,67.5, 9.5), lwd = 3, col = "blue")
+
+
+media.muestra <- mean(calificaciones)
+mu.nula <- 67.5
+sd.pob <- 9.5
+N <- length(calificaciones)
+puntaje.z <- (media.muestra-mu.nula)/(sd.pob/sqrt(N))
+
+area.superior <- pnorm(q=puntaje.z, lower.tail = F)
+area.inferior <- pnorm(q=-puntaje.z, lower.tail = T)
+
+valor.p <- area.superior + area.inferior
+valor.p
+
+
+#prueba t para una muestra
+sd(calificaciones)
+library(lsr)
+
+oneSampleTTest(x = calificaciones, mu = 67.5)
+
+t.test(x= calificaciones, mu = 67.5)
+
+
+#prueba para muestras independientes
+pruebat <- read.delim("pruebat.txt")
+pruebat$Tutora <- as.factor(pruebat$Tutora)
+
+aggregate(pruebat[,2], list(pruebat$Tutora), mean)
+
+Ana <- pruebat[pruebat$Tutora == "Ana",]
+Camila <- pruebat[pruebat$Tutora == "Camila",]
+
+par(mfrow = c(2,1))
+hist(Ana$Calificacion, xlim = c(40,100), ylim = c(0,7),
+     main = "Notas estudiantes Ana")
+hist(Camila$Calificacion, xlim = c(40,100), ylim = c(0,7),
+     main = "Notas estudiantes Camila")
+par(mfrow = c(1,1))
+
+independentSamplesTTest(formula = Calificacion ~ Tutora,
+                        data = pruebat, var.equal = T)
+
+t.test(formula = Calificacion ~ Tutora, data = pruebat, 
+       var.equal = T)
+
+#Prueba t de Welch (no asume homocedasticidad)
+independentSamplesTTest(formula = Calificacion ~ Tutora,
+                        data = pruebat)
+
+t.test(formula = Calificacion ~ Tutora, data = pruebat)
+
+#Prueba t para muestras pareadas
+pruebat2 <- read.delim("pruebat2.txt")
+library(psych)
+describe(pruebat2)
+
+plot(pruebat2$prueba_1, pruebat2$prueba_2,
+     xlab = "Calificaciones prueba 1",
+     ylab = "Calificaciones prueba 2",
+     pch = 20
+     )
+abline(a = 0, b = 1)
+
+pruebat2$mejora <- pruebat2$prueba_2 - pruebat2$prueba_1
+
+oneSampleTTest(pruebat2$mejora, mu = 0)
+
+t.test(x = pruebat2$prueba_2, y = pruebat2$prueba_1, paired = T)
